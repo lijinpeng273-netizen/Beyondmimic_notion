@@ -60,46 +60,47 @@ G1_CYLINDER_CFG = ArticulationCfg(
         joint_vel={".*": 0.0},
     ),
     soft_joint_pos_limit_factor=0.9,
+    #五组驱动器配置
     actuators={
-        "legs": ImplicitActuatorCfg(
+        "legs": ImplicitActuatorCfg(#脚部的电机配置
             joint_names_expr=[
                 ".*_hip_yaw_joint",
                 ".*_hip_roll_joint",
                 ".*_hip_pitch_joint",
                 ".*_knee_joint",
             ],
-            effort_limit_sim={
+            effort_limit_sim={#力矩限制
                 ".*_hip_yaw_joint": 88.0,
                 ".*_hip_roll_joint": 139.0,
                 ".*_hip_pitch_joint": 88.0,
                 ".*_knee_joint": 139.0,
             },
-            velocity_limit_sim={
+            velocity_limit_sim={#速度限制
                 ".*_hip_yaw_joint": 32.0,
                 ".*_hip_roll_joint": 20.0,
                 ".*_hip_pitch_joint": 32.0,
                 ".*_knee_joint": 20.0,
             },
-            stiffness={
+            stiffness={#刚度配置
                 ".*_hip_pitch_joint": STIFFNESS_7520_14,
                 ".*_hip_roll_joint": STIFFNESS_7520_22,
                 ".*_hip_yaw_joint": STIFFNESS_7520_14,
                 ".*_knee_joint": STIFFNESS_7520_22,
             },
-            damping={
+            damping={#阻尼配置
                 ".*_hip_pitch_joint": DAMPING_7520_14,
                 ".*_hip_roll_joint": DAMPING_7520_22,
                 ".*_hip_yaw_joint": DAMPING_7520_14,
                 ".*_knee_joint": DAMPING_7520_22,
             },
-            armature={
+            armature={#惯量配置
                 ".*_hip_pitch_joint": ARMATURE_7520_14,
                 ".*_hip_roll_joint": ARMATURE_7520_22,
                 ".*_hip_yaw_joint": ARMATURE_7520_14,
                 ".*_knee_joint": ARMATURE_7520_22,
             },
         ),
-        "feet": ImplicitActuatorCfg(
+        "feet": ImplicitActuatorCfg(#脚部末端的电机配置
             effort_limit_sim=50.0,
             velocity_limit_sim=37.0,
             joint_names_expr=[".*_ankle_pitch_joint", ".*_ankle_roll_joint"],
@@ -107,7 +108,7 @@ G1_CYLINDER_CFG = ArticulationCfg(
             damping=2.0 * DAMPING_5020,
             armature=2.0 * ARMATURE_5020,
         ),
-        "waist": ImplicitActuatorCfg(
+        "waist": ImplicitActuatorCfg(#腰部的电机配置
             effort_limit_sim=50,
             velocity_limit_sim=37.0,
             joint_names_expr=["waist_roll_joint", "waist_pitch_joint"],
@@ -115,7 +116,7 @@ G1_CYLINDER_CFG = ArticulationCfg(
             damping=2.0 * DAMPING_5020,
             armature=2.0 * ARMATURE_5020,
         ),
-        "waist_yaw": ImplicitActuatorCfg(
+        "waist_yaw": ImplicitActuatorCfg(#腰部旋转关节的电机配置
             effort_limit_sim=88,
             velocity_limit_sim=32.0,
             joint_names_expr=["waist_yaw_joint"],
@@ -123,7 +124,7 @@ G1_CYLINDER_CFG = ArticulationCfg(
             damping=DAMPING_7520_14,
             armature=ARMATURE_7520_14,
         ),
-        "arms": ImplicitActuatorCfg(
+        "arms": ImplicitActuatorCfg(#手臂的电机配置
             joint_names_expr=[
                 ".*_shoulder_pitch_joint",
                 ".*_shoulder_roll_joint",
