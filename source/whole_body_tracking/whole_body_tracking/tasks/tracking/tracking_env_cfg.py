@@ -26,7 +26,7 @@ import whole_body_tracking.tasks.tracking.mdp as mdp
 ##
 # Scene definition
 ##
-
+#全局速度和角速度的定义
 VELOCITY_RANGE = {
     "x": (-0.5, 0.5),
     "y": (-0.5, 0.5),
@@ -38,7 +38,7 @@ VELOCITY_RANGE = {
 
 
 @configclass
-class MySceneCfg(InteractiveSceneCfg):
+class MySceneCfg(InteractiveSceneCfg):#场景定义
     """Configuration for the terrain scene with a legged robot."""
 
     # ground terrain
@@ -79,7 +79,7 @@ class MySceneCfg(InteractiveSceneCfg):
 
 
 @configclass
-class CommandsCfg:
+class CommandsCfg:#指令配置
     """Command specifications for the MDP."""
 
     motion = mdp.MotionCommandCfg(
@@ -107,19 +107,19 @@ class ActionsCfg:
 
 
 @configclass
-class ObservationsCfg:
+class ObservationsCfg:#观测配置（不对称的Actor-Critic 架构）
     """Observation specifications for the MDP."""
 
     @configclass
-    class PolicyCfg(ObsGroup):
+    class PolicyCfg(ObsGroup):#观测组配置（带噪声）
         """Observations for policy group."""
 
         # observation terms (order preserved)
         command = ObsTerm(func=mdp.generated_commands, params={"command_name": "motion"})
-        motion_anchor_pos_b = ObsTerm(
+        motion_anchor_pos_b = ObsTerm(#锚点位置的观测项，带有噪声
             func=mdp.motion_anchor_pos_b, params={"command_name": "motion"}, noise=Unoise(n_min=-0.25, n_max=0.25)
         )
-        motion_anchor_ori_b = ObsTerm(
+        motion_anchor_ori_b = ObsTerm(#锚点姿态的观测项，带有噪声
             func=mdp.motion_anchor_ori_b, params={"command_name": "motion"}, noise=Unoise(n_min=-0.05, n_max=0.05)
         )
         base_lin_vel = ObsTerm(func=mdp.base_lin_vel, noise=Unoise(n_min=-0.5, n_max=0.5))
@@ -133,7 +133,7 @@ class ObservationsCfg:
             self.concatenate_terms = True
 
     @configclass
-    class PrivilegedCfg(ObsGroup):
+    class PrivilegedCfg(ObsGroup):#观测组配置（不带噪声）
         command = ObsTerm(func=mdp.generated_commands, params={"command_name": "motion"})
         motion_anchor_pos_b = ObsTerm(func=mdp.motion_anchor_pos_b, params={"command_name": "motion"})
         motion_anchor_ori_b = ObsTerm(func=mdp.motion_anchor_ori_b, params={"command_name": "motion"})
@@ -151,7 +151,7 @@ class ObservationsCfg:
 
 
 @configclass
-class EventCfg:
+class EventCfg:#事件配置
     """Configuration for events."""
 
     # startup
@@ -196,9 +196,9 @@ class EventCfg:
 
 
 @configclass
-class RewardsCfg:
+class RewardsCfg:#奖励配置
     """Reward terms for the MDP."""
-
+    #运动跟踪配置（正奖励），以下全是误差项，越小奖励越大
     motion_global_anchor_pos = RewTerm(
         func=mdp.motion_global_anchor_position_error_exp,
         weight=0.5,
@@ -229,6 +229,7 @@ class RewardsCfg:
         weight=1.0,
         params={"command_name": "motion", "std": 3.14},
     )
+    #关节位置和速度的误差项，越小奖励越大（负奖励）
     action_rate_l2 = RewTerm(func=mdp.action_rate_l2, weight=-1e-1)
     joint_limit = RewTerm(
         func=mdp.joint_pos_limits,
@@ -251,7 +252,7 @@ class RewardsCfg:
 
 
 @configclass
-class TerminationsCfg:
+class TerminationsCfg:#终止配置
     """Termination terms for the MDP."""
 
     time_out = DoneTerm(func=mdp.time_out, time_out=True)
@@ -291,7 +292,7 @@ class CurriculumCfg:
 
 
 @configclass
-class TrackingEnvCfg(ManagerBasedRLEnvCfg):
+class TrackingEnvCfg(ManagerBasedRLEnvCfg):#跟踪环境配置，顶层设计
     """Configuration for the locomotion velocity-tracking environment."""
 
     # Scene settings
@@ -306,7 +307,7 @@ class TrackingEnvCfg(ManagerBasedRLEnvCfg):
     events: EventCfg = EventCfg()
     curriculum: CurriculumCfg = CurriculumCfg()
 
-    def __post_init__(self):
+    def __post_init__(self):#运行时候的参数配置
         """Post initialization."""
         # general settings
         self.decimation = 4

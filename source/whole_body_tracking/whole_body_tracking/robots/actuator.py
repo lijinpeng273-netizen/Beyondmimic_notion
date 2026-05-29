@@ -33,7 +33,7 @@ class DelayedImplicitActuator(ImplicitActuator):
         # all of the envs
         self._ALL_INDICES = torch.arange(self._num_envs, dtype=torch.long, device=self._device)
 
-    def reset(self, env_ids: Sequence[int]):
+    def reset(self, env_ids: Sequence[int]):#重置函数，在每次重置时为每个环境设置一个新的随机延迟，并重置缓冲区
         super().reset(env_ids)
         # number of environments (since env_ids can be a slice)
         if env_ids is None or env_ids == slice(None):
